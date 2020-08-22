@@ -1,0 +1,85 @@
+<div class="d-flex">
+    <h1 class="mt-4">Trash</h1>
+
+    {{!-- Search Form --}}
+    <form action="/notes/search" method="GET" class="form-inline mt-4 ml-auto">
+        <div class="form-group mr-1">
+            <input type="text" class="form-control" name="q" value="{{key}}">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+</div>
+
+<div>
+    <div class="mt-4">
+        <div class="row">
+            {{#each notes}}
+            <div class="col-sm-6 col-lg-4 mb-4">
+                <div class="card" style="width: 18rem; background-color: #ccc">
+                    {{!-- <img class="card-img-top" src="https://images.unsplash.com/photo-1507041837439-6fc87784cb68?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=60" alt="Card image cap"> --}}
+                    <div class="card-body">
+                        <h5 class="card-title" style="color: blue;">{{this.title}}</h5>
+                        <p class="card-text">{{this.description}}</p>
+                        <a type="button" data-toggle="modal" data-target="#delete_note_modal" data-id="{{this._id}}"><img src="https://img.icons8.com/material/2x/delete-forever.png" style="height: 30px;"></a>
+                        <a class="btn-restore" data-id="{{this._id}}" type="button"><img src="https://img.icons8.com/windows/32/000000/settings-backup-restore.png" style="margin-left: 10px;"/></a>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div> 
+    </div>
+</div>
+
+<!-- Delete Note Model -->
+<div class="modal fade" id="delete_note_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Delete Note</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        This action can't restore. Do you want to <b>delete forever</b> this note?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="btn-delete-note" type="button" class="btn btn-danger">Delete forever</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form name="delete-note-form" method="POST"></form>
+<form name="restore-note-form" method="POST"></form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var noteId;
+        var deleteForm = document.forms['delete-note-form'];
+        var restoreForm = document.forms['restore-note-form'];
+        var restoreBtn = $('.btn-restore');
+
+        // When dialog confirm clicked
+        $('#delete_note_modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); 
+            noteId = button.data('id');
+        });
+
+        document.getElementById('btn-delete-note').onclick = function() {
+            deleteForm.action = '/notes/' + noteId + '/force?_method=DELETE';
+            deleteForm.submit();
+        }
+
+        // Restore button clicked
+        restoreBtn.click(function(e) {
+            e.preventDefault(); // bỏ hành động mặc định của thẻ a đi
+
+            var noteId = $(this).data('id');
+            restoreForm.action = '/notes/' + noteId + '/restore?_method=PATCH';
+            restoreForm.submit();
+        });
+    });
+</script>

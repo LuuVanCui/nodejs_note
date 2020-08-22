@@ -1,0 +1,165 @@
+<div class="d-flex container">
+    <h1 class="mt-4">View All Notes</h1>
+    <a href="/notes/create" type="button" class="btn btn-success mt-4 ml-3">New Note</a>
+    <a href="/notes/trash" type="button" class="mt-4 ml-3"><img class="trash_icon" src="https://image.flaticon.com/icons/svg/1345/1345874.svg">Trash</a>
+    <form action="/notes/search" method="GET" class="form-inline mt-4 ml-auto">
+        <div class="form-group mr-1">
+            <input type="text" class="form-control" name="q" value="{{key}}">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+</div>
+
+{{!-- Test giao dien moi --}}
+<div class="tab mt-4">
+  <button class="tablinks" onclick="clickItem(event, 'note')">Note</button>
+  <button class="tablinks" onclick="clickItem(event, 'trash')"><img class="trash_icon" src="https://image.flaticon.com/icons/svg/1345/1345874.svg">Trash</button>
+</div>
+
+<div id="note" class="tabcontent mt-4">
+  <div class="row mt-2">
+    {{#each notes}}
+    <div class="col-sm-6 col-lg-4 mb-2">
+        <div class="card" style="width: 18rem; background-color: #ccc">
+            <div class="card-body">
+                <h5 class="card-title" style="color: blue;">{{this.title}}</h5>
+                <p class="card-text">{{this.description}}</p>
+                <a href="/notes/{{this._id}}/edit" class="btn btn-info">Update</a>
+                <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#soft-delete_note_modal" data-id="{{this._id}}" >Delete</button>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+  </div>
+</div>
+
+<div id="trash" class="tabcontent mt-4">
+  <div class="row mt-2">
+      {{#each notesTrash}}
+      <div class="col-sm-6 col-lg-4 mb-4">
+          <div class="card" style="width: 18rem; background-color: #ccc">
+              <div class="card-body">
+                  <h5 class="card-title" style="color: blue;">{{this.title}}</h5>
+                  <p class="card-text">{{this.description}}</p>
+                  <a type="button" data-toggle="modal" data-target="#delete_note_modal" data-id="{{this._id}}"><img src="https://img.icons8.com/material/2x/delete-forever.png" style="height: 30px;"></a>
+                  <a class="btn-restore" data-id="{{this._id}}" type="button"><img src="https://img.icons8.com/windows/32/000000/settings-backup-restore.png" style="margin-left: 10px;"/></a>
+              </div>
+          </div>
+      </div>
+      {{/each}}
+  </div>
+</div>
+
+{{!-- JS cho giao dien moi =-----------------------------------------------------------------}}
+<script>
+    function clickItem(evt, item) {
+    // Declare all variables
+      var i, tabcontent, tablinks;
+
+      // Get all elements with class="tabcontent" and hide them
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+
+      // Get all elements with class="tablinks" and remove the class "active"
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+
+      // Show the current tab, and add an "active" class to the link that opened the tab
+      document.getElementById(item).style.display = "block";
+      evt.currentTarget.className += " active";
+  }
+  
+  clickItem(event, 'note');
+</script>
+
+
+<!-- Soft Delete Note Model -->
+<div class="modal fade" id="soft-delete_note_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Delete Note</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you want to delete this note?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="btn-soft-delete-note" type="button" class="btn btn-primary">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- Force Delete Model --}}
+<div class="modal fade" id="delete_note_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Delete Note</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        This action can't restore. Do you want to <b>delete forever</b> this note?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="btn-delete-note" type="button" class="btn btn-danger">Delete forever</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- Delete Hidden Form --}}
+<form name="delete-note-form" method="POST"></form>
+<form name="restore-note-form" method="POST"></form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var noteId;
+        var deleteForm = document.forms['delete-note-form'];
+        var restoreForm = document.forms['restore-note-form'];
+        var restoreBtn = $('.btn-restore');
+
+        // When dialog confirm clicked soft-delete
+        $('#soft-delete_note_modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); 
+            noteId = button.data('id');
+        });
+
+        document.getElementById('btn-soft-delete-note').onclick = function() {
+            deleteForm.action = '/notes/' + noteId + '?_method=DELETE';
+            deleteForm.submit();
+        }
+
+        // When dialog confirm clicked force-delete
+        $('#delete_note_modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); 
+            noteId = button.data('id');
+        });
+
+        document.getElementById('btn-delete-note').onclick = function() {
+            deleteForm.action = '/notes/' + noteId + '/force?_method=DELETE';
+            deleteForm.submit();
+        }
+
+        // Restore button clicked
+        restoreBtn.click(function(e) {
+            e.preventDefault(); // bỏ hành động mặc định của thẻ a đi
+
+            var noteId = $(this).data('id');
+            restoreForm.action = '/notes/' + noteId + '/restore?_method=PATCH';
+            restoreForm.submit();
+        });
+    });
+</script>

@@ -2,7 +2,9 @@ const express = require('express');
 const exHandlebar  = require('express-handlebars');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const methodOverride = require('method-override');  
+const passport = require('passport');
 
 const route = require('./resources/routes')
 const db = require('./config/db');
@@ -12,6 +14,16 @@ const port = 3000;
 
 // Connect to DB
 db.connect();
+
+// Use session
+app.use(session({
+    resave: false,
+    saveUninitialized: true,
+    secret: 'SECRET' 
+  }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Use body parser
 app.use(express.urlencoded({ extended: true }));

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const notesController = require('../controllers/notes.controller');
+const notesController = require('../../app/controllers/notes.controller');
 
 router.get('/create', notesController.create);
 router.post('/store', notesController.store);

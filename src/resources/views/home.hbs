@@ -1,164 +1,121 @@
-<div class="d-flex container">
-    <h1 class="mt-4">View All Notes</h1>
-    <a href="/notes/create" type="button" class="btn btn-success mt-4 ml-3">New Note</a>
-    <a href="/notes/trash" type="button" class="mt-4 ml-3"><img class="trash_icon" src="https://image.flaticon.com/icons/svg/1345/1345874.svg">Trash</a>
-    <form action="/notes/search" method="GET" class="form-inline mt-4 ml-auto">
-        <div class="form-group mr-1">
-            <input type="text" class="form-control" name="q" value="{{key}}">
-        </div>
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
-</div>
 
-{{!-- Test giao dien moi --}}
-<div class="tab mt-4">
-  <button class="tablinks" onclick="clickItem(event, 'note')">Note</button>
-  <button class="tablinks" onclick="clickItem(event, 'trash')"><img class="trash_icon" src="https://image.flaticon.com/icons/svg/1345/1345874.svg">Trash</button>
-</div>
+<div class="row">
+  <div class="col-1" id="col1">
+     <div type="button" class="new-note-btn"><img src="https://icons-for-free.com/iconfiles/png/512/add+icon+dashboard+new+icon-1320165656853017350.png" style="height: 40px;"></div>
+     <div type="button" class="all-notes"><img src="https://img.icons8.com/nolan/64/google-keep.png" style="height: 30px;"/>Note</div>
+     <div type="button">Trash</div> 
+     <div type="button" class="power"><img src="https://img.icons8.com/ios/50/000000/power-off-button--v2.png" style="height: 30px"/></div>
+  </div>
 
-<div id="note" class="tabcontent mt-4">
-  <div class="row mt-2">
+  <div class="col-3" id="col2">
     {{#each notes}}
-    <div class="col-sm-6 col-lg-4 mb-2">
-        <div class="card" style="width: 18rem; background-color: #ccc">
-            <div class="card-body">
-                <h5 class="card-title" style="color: blue;">{{this.title}}</h5>
-                <p class="card-text">{{this.description}}</p>
-                <a href="/notes/{{this._id}}/edit" class="btn btn-info">Update</a>
-                <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#soft-delete_note_modal" data-id="{{this._id}}" >Delete</button>
-            </div>
-        </div>
-    </div>
+      <div class="notes" data-id="{{this._id}}">
+        {{#if title}}
+          <h5>{{this.title}}</h4>
+        {{else}}
+          <h5>No title</h5>
+        {{/if}}
+        <p>{{this.description}}</p>
+      </div>
     {{/each}}
   </div>
-</div>
 
-<div id="trash" class="tabcontent mt-4">
-  <div class="row mt-2">
-      {{#each notesTrash}}
-      <div class="col-sm-6 col-lg-4 mb-4">
-          <div class="card" style="width: 18rem; background-color: #ccc">
-              <div class="card-body">
-                  <h5 class="card-title" style="color: blue;">{{this.title}}</h5>
-                  <p class="card-text">{{this.description}}</p>
-                  <a type="button" data-toggle="modal" data-target="#delete_note_modal" data-id="{{this._id}}"><img src="https://img.icons8.com/material/2x/delete-forever.png" style="height: 30px;"></a>
-                  <a class="btn-restore" data-id="{{this._id}}" type="button"><img src="https://img.icons8.com/windows/32/000000/settings-backup-restore.png" style="margin-left: 10px;"/></a>
-              </div>
-          </div>
+  <div class="col-8 content-detail" id="col3">
+    <form class="note-detail-form">
+      <input name="title" type="text" class="txt-title" placeholder="Title">
+      <textarea name="description" class="txt-description">{{description}}</textarea>
+      <div class="button-submit">
+        <button type="submit" class="update-btn" id="button">Update</button>
+        <button type="submit" class="delete-btn" id="button">Delete</button>
       </div>
-      {{/each}}
+    </form>
   </div>
 </div>
 
-{{!-- JS cho giao dien moi =-----------------------------------------------------------------}}
-<script>
-    function clickItem(evt, item) {
-    // Declare all variables
-      var i, tabcontent, tablinks;
-
-      // Get all elements with class="tabcontent" and hide them
-      tabcontent = document.getElementsByClassName("tabcontent");
-      for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-      }
-
-      // Get all elements with class="tablinks" and remove the class "active"
-      tablinks = document.getElementsByClassName("tablinks");
-      for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-      }
-
-      // Show the current tab, and add an "active" class to the link that opened the tab
-      document.getElementById(item).style.display = "block";
-      evt.currentTarget.className += " active";
-  }
-  
-  clickItem(event, 'note');
-</script>
-
-
-<!-- Soft Delete Note Model -->
-<div class="modal fade" id="soft-delete_note_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Delete Note</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Do you want to delete this note?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="btn-soft-delete-note" type="button" class="btn btn-primary">Delete</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-{{!-- Force Delete Model --}}
-<div class="modal fade" id="delete_note_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Delete Note</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        This action can't restore. Do you want to <b>delete forever</b> this note?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="btn-delete-note" type="button" class="btn btn-danger">Delete forever</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-{{!-- Delete Hidden Form --}}
-<form name="delete-note-form" method="POST"></form>
-<form name="restore-note-form" method="POST"></form>
+{{!-- form submit --}}
+<form name="create-note-form" method="POST"></form>
+<form name="display-note-form" method="GET"></form>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var noteId;
-        var deleteForm = document.forms['delete-note-form'];
-        var restoreForm = document.forms['restore-note-form'];
-        var restoreBtn = $('.btn-restore');
+  document.addEventListener('DOMContentLoaded', function() {
+    var noteId;
+    var newNoteBtn = $('.new-note-btn');
+    var allNoteBtn = $('.all-notes');
 
-        // When dialog confirm clicked soft-delete
-        $('#soft-delete_note_modal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget); 
-            noteId = button.data('id');
-        });
+    // when click note item
+    /*$('.notes').click(function() {
+      noteId = $(this).data('id');
+      var title = $(this).children().first().text();
+      var description = $(this).children().last().text();
+      $('.txt-title').val(title);
+      $('.txt-description').val(description);
 
-        document.getElementById('btn-soft-delete-note').onclick = function() {
-            deleteForm.action = '/notes/' + noteId + '?_method=DELETE';
-            deleteForm.submit();
-        }
+      // remove all css
+      $('.notes').removeClass('highLightedItem');
+      // add effect
+      $(this).addClass('highLightedItem');
 
-        // When dialog confirm clicked force-delete
-        $('#delete_note_modal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget); 
-            noteId = button.data('id');
-        });
-
-        document.getElementById('btn-delete-note').onclick = function() {
-            deleteForm.action = '/notes/' + noteId + '/force?_method=DELETE';
-            deleteForm.submit();
-        }
-
-        // Restore button clicked
-        restoreBtn.click(function(e) {
-            e.preventDefault(); // bỏ hành động mặc định của thẻ a đi
-
-            var noteId = $(this).data('id');
-            restoreForm.action = '/notes/' + noteId + '/restore?_method=PATCH';
-            restoreForm.submit();
-        });
+     // history.pushState({}, "", "/" + noteId);
     });
+    */
+    
+    allNoteBtn.click(function() {
+      $.ajax({
+        url: '/notes/' + noteId,
+        contentType: 'application/json',
+        success: function(response) {
+          $('#col2').html('');
+          response.notes.forEach(note => {
+            $('#col2').append(`
+              <div class="notes" data-id="` + note._id + `">  
+                <h5>` + note.title + `</h4>
+                <p>` + note.description + `</p>
+              </div>
+            `);
+          });
+
+          // remove all css
+          $('.notes').removeClass('highLightedItem');
+          // add effect
+          $('.notes').first().addClass('highLightedItem');
+          var title = $('.notes').first().children().first().text();
+        }
+      });
+    });
+
+// --------------------------------------------------------------------
+    
+
+// ---------------------------------------------------------------------
+    // when click Update 
+    $('.note-detail-form').on('submit', function(event) {
+      event.preventDefault();
+
+      let title = $('.txt-title').val();
+      let description = $('.txt-description').val();
+
+      $.ajax({
+        url: '/notes/' + noteId,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({ title, description }),
+        success: function(response) {
+          console.log(response);
+        }
+      });
+    });
+  // -------------------------------------------------------------------
+    // DELETE
+    // when click DELETE
+    $('.note-detail-form').on('click', '.delete-btn', function() {
+      $.ajax({
+        url: '/notes/' + noteId,
+        method: 'DELETE',
+        contentType: 'application/json',
+        success: function(response) {
+          console.log(response);
+        }
+      });
+    });
+  });
 </script>

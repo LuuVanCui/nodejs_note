@@ -3,6 +3,7 @@ const router = express.Router();
 
 const notesController = require('../../app/controllers/notes.controller');
 
+router.get('/:id', notesController.displayNote)
 router.get('/create', notesController.create);
 router.post('/store', notesController.store);
 router.get('/:id/edit', notesController.edit);

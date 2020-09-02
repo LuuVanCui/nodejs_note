@@ -8,6 +8,7 @@ const passport = require('passport');
 
 const route = require('./resources/routes')
 const db = require('./config/db');
+const { dirname } = require('path');
 
 const app = express();
 const port = 3000;
@@ -49,5 +50,5 @@ app.use(cookieParser());
 route(app);
 
 app.listen(port, () => {
-    console.log(`Note app is listening on port ${port}`);
-});
+    console.log(`Note App listening on port ${port}`);
+})

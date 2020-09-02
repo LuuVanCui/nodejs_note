@@ -4,7 +4,6 @@ const { mongooseToObject, mutipleMongooseToObject } = require('../../until/mongo
 const mongoose = require('../../until/mongoose');
 const mongoseLib = require('mongoose');
 
-
 class NotesController {
     // [GET] /notes/create
     create(req, res, next) {
@@ -15,17 +14,9 @@ class NotesController {
 
     // [POST] /notes/store
     store(req, res, next) {
-       const noteInput = req.body;
-       if (noteInput.title == '') {
-           res.render('notes/create', {
-                message: 'Please input Title!'
-            });
-           return;
-       } 
-
-       noteInput.userId = res.locals.user[0]._id;
-       
-       const note = new Note(noteInput);
+       const userLogin = res.locals.user[0];
+       const userId = userLogin._id; 
+       const note = new Note({title: '', description: '', userId});
 
        note.save()
         .then(() => res.redirect('/'))
@@ -35,7 +26,7 @@ class NotesController {
     // [DELETE] /notes/:id
     destroy(req, res, next) {
         Note.delete({ _id: req.params.id })
-            .then(() => res.redirect('back'))
+            .then(() => res.send('Successfully deleted note!'))
             .catch(next);
     }
 
@@ -60,7 +51,7 @@ class NotesController {
     // [PUT] /notes/:id
     update(req, res, next) {
         Note.updateOne({ _id: req.params.id }, req.body)
-            .then(() => res.redirect('/'))
+            .then(() => res.send('Successfully updated note!'))
             .catch(next);
     }
 
@@ -95,6 +86,14 @@ class NotesController {
         Note.restore({ _id: req.params.id })
             .then(() => res.redirect('back'))
             .catch(next);   
+    }
+
+    // [GET] /:id
+    displayNote(req, res, next) {
+        const userId = res.locals.user[0]._id;
+        Note.find({ userId }).sort({ 'updatedAt': -1 })
+            .then(notes => res.send({notes}))
+            .catch(next);
     }
 }
 

@@ -11,7 +11,7 @@ class SiteController {
         
         const notesTrash = await Note.findDeleted({ userId });
         
-        Note.find({ userId })
+        Note.find({ userId }).sort({ 'updatedAt': -1 })
             .then(notes => res.render('home', { 
                 notes: mutipleMongooseToObject(notes),
                 notesTrash: mutipleMongooseToObject(notesTrash),

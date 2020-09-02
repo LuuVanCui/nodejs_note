@@ -1,8 +1,11 @@
-// CSS HEADER
+  // CSS HEADER
 // Background
 
 body, html {
     height: 100%;
+    width: 100%;
+    // Tắt scroll bar của thẻ html lớn
+    overflow-x: hidden;
 }
 
 .logo {
@@ -23,10 +26,6 @@ body, html {
     margin-top: 4px;
 }
 
-.trash_icon {
-    height: 30px;
-}
-
 .account-content {
     position: relative;
     top: 100px;
@@ -38,48 +37,94 @@ body, html {
     left: 40%;
 }
 
-// CSS giao dien moi -------------------------------------------------------------------------------------
-* {box-sizing: border-box}
-
-/* Style the tab */
-.tab {
-  float: left;
-  border-top: 1px solid #ccc;
-  background-color: #f1f1f1;
-  width: 20%;
-  height: auto;
+// --------------------- CSS again-----------------------
+.row {
+  height: 501px;  
 }
 
-/* Style the buttons that are used to open the tab content */
-.tab button {
-  display: block;
-  background-color: inherit;
-  color: black;
-  padding: 22px 16px;
-  width: 100%;
-  border: none;
-  outline: none;
-  text-align: left;
+#col1 {
+  background-color: green;
+  max-width: 50%;
+  .power {
+    max-width: 50%;
+    position: absolute;
+    top: 430px;
+  }
+}
+
+#col2 {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 500px; 
+
+  .notes {
+    border-top: 1px solid grey;
+    height: 100px;
+  }
+}
+
+#col2 :hover {
   cursor: pointer;
-  transition: 0.3s;
 }
 
-/* Change background color of buttons on hover */
-.tab button:hover {
-  background-color: #ddd;
+// Col2
+.col-3 {
+  padding: 0;
 }
 
-/* Create an active/current "tab button" class */
-.tab button.active {
-  background-color: #2F4F4F;
+// Col 3
+.col-8 {
+  padding: 0;
+  height: 100%;
 }
 
-/* Style the tab content */
-.tabcontent {
-  float: left;
-  padding: 0px 12px;
-  border-top: 1px solid #ccc;
-  width: 80%;
-  border-left: none;
-  height: auto;
+#col3 {
+  .note-detail-form {
+    .txt-title {
+      margin: 0;
+      width: 100%;
+      height: 80px;
+      font-size: 40px;
+      font-weight: lighter;
+      border: none;
+    }
+  
+    .txt-description {
+      border: none;
+      border-top: 1px solid grey;
+      resize: none;
+      position: inherit;  
+      width: 100%;
+      height: 380px;
+    }
+
+    .button-submit {
+      #button {
+        display: inline;
+        width: 49%;
+        border-radius: 5px;
+        border: 1px solid grey;
+        padding: 5px;
+        color: white;
+      }
+  
+      .update-btn {
+      background-color: green;
+      }
+    
+      .delete-btn {
+      background-color: red;
+      }
+    }
+  } 
+}
+
+.highLightedItem {
+  border: 1px solid green;
+  border-radius: 5px;
+  background-color: rgb(155, 153, 153);
+}
+
+input:focus, textarea:focus, select:focus{
+  outline: none;
 }
